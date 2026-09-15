@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.env
+.astro_qc_trend.db
+test_image.fits
+debug_psf.py
