@@ -48,6 +48,22 @@ def json_export(filepath: str):
     print(result.model_dump_json(indent=2))
 
 @app.command()
+def batch(directory: str):
+    """Run QC on a directory of FITS files"""
+    from pathlib import Path
+    p = Path(directory)
+    files = list(p.glob("*.fits")) + list(p.glob("*.fit"))
+    if not files:
+        console.print(f"No FITS files found in {directory}")
+        return
+        
+    console.print(f"Analyzing {len(files)} files...")
+    for f in files:
+        # Silently analyze and save to DB
+        analyze_file(str(f))
+    console.print(f"Batch completed. Results saved to trending database.")
+
+@app.command()
 def trend():
     """Show simple text-based trending of metrics"""
     from astro_qc.trending.db import get_trend_data
