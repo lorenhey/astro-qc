@@ -1,93 +1,57 @@
-# astro-qc
+# astro-qc (v2.0.0)
 
-> `astro-qc` convierte productos astronómicos en métricas, flags y evidencia reproducibles para decidir si cumplen requisitos científicos explícitos.
+[![GitHub Pages Deployment](https://img.shields.io/badge/GitHub%20Pages-Live%20v2.0.0-emerald)](https://lorenhey.github.io/astro-qc/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Standards: FITS / WCS / Moffat](https://img.shields.io/badge/Standards-FITS%20%7C%20WCS%20%7C%20Moffat-amber.svg)](https://lorenhey.github.io/astro-qc/)
 
-## Quick Start
+> **Control de Calidad Científica de Datos Astronómicos, Métricas PSF, Selector & Ponderador de Subframes.**  
+> Transforma imágenes FITS en métricas rigurosas (FWHM, elipticidad, SNR, fondo por $\sigma$-clipping) con proveniencia reproducible para decidir objetivamente si cumplen requisitos científicos de observación.
 
-```bash
-uv run astro-qc quick exposure.fits
-```
+🔗 **Workbench Web Interactiva:** [https://lorenhey.github.io/astro-qc/](https://lorenhey.github.io/astro-qc/)
 
-Output:
+---
 
-```text
-SCIENCE-0042
+## 🔭 Capacidades Principales (v2.0.0)
 
-FITS          PASS
-Metadata      PASS
-Background    PASS
-PSF           WARNING
-Astrometry    PASS
-Artifacts     WARNING
+1. **Modelado y Ajuste de PSF (Point Spread Function):**
+   * Ajuste de perfil Gaussiano 2D y Moffat ($\beta \approx 4.765$) con resolución exacta de FWHM:
+     $$\text{FWHM} = 2.35482 \cdot \sigma \quad (\text{Gauss}) \qquad \text{FWHM} = 2 \alpha \sqrt{2^{1/\beta} - 1} \quad (\text{Moffat})$$
+   * Detección de elongación estelar por deriva de guiado o flexión mecánica:
+     $$e = 1 - \frac{b}{a}, \quad \varepsilon = \sqrt{1 - \left(\frac{b}{a}\right)^2}$$
 
-Overall:
-CONDITIONAL
+2. **Fondo de Cielo Robusto & SNR:**
+   * Estimador insensible a rayos cósmicos y estrellas saturadas mediante Mediana y Desviación Absoluta respecto a la Mediana (**MAD**):
+     $$\sigma_{\text{robust}} = 1.4826 \cdot \text{Mediana}(|x_i - \tilde{x}|)$$
+   * Relación Señal/Ruido (SNR) considerando varianza Poisson, ruido de lectura del sensor y fondo de cielo.
 
-2 issues require review.
-```
+3. **Perfiles Científicos (Science Profiles):**
+   * **Astrofotografía de Espacio Profundo (DSO):** Prioriza contraste, FWHM fino y bajo fondo.
+   * **Fotometría de Precisión:** Tolerancia nula a saturación para tránsitos de exoplanetas y estrellas variables.
+   * **Astrometría & Seguimiento:** Exigencia crítica de simetría estelar para asteroides y NEOs.
+   * **Lucky Imaging:** Selección implacable de los mejores subframes (top 10%–20%).
 
-## QC Philosophy
+4. **Ponderación de Apilado (Stacking Weights):**
+   * Ponderación diferencial para integración en lugar de promediado plano:
+     $$W_i = 0.45 \cdot \left(\frac{\text{FWHM}_{\text{min}}}{\text{FWHM}_i}\right)^2 + 0.35 \cdot \left(\frac{1 - e_i}{1 - e_{\text{min}}}\right) + 0.20 \cdot \left(\frac{\text{SNR}_i}{\text{SNR}_{\text{max}}}\right)$$
 
-La calidad de un dato astronómico no es un número universal. Una imagen puede ser excelente para fotometría, mediocre para morfología, e inútil para astrometría fina.
-Por eso `astro-qc` mide primero y juzga después, usando **Science Profiles** configurables. 
+5. **Simulador Sintético FITS & Visor Radial:**
+   * Generador 2D interactivo con estrellas sintéticas, seeing ajustable en tiempo real y perfil radial 1D.
+   * Modo Nocturno Rojo (`Shift+R`) para trabajo de campo en el telescopio.
 
-No vas a encontrar un "Quality Score" mágico. Vas a encontrar métricas rigurosas (FWHM, ellipticity, astrometric RMS, zeropoint), con proveniencia clara de cómo y cuándo se midieron.
+---
 
-## Core Capabilities
-
-- **FITS Validation:** Integridad de HDUs, checksums y validación de NAXIS/BITPIX.
-- **Metadata:** Normalización de metadatos (DATE-OBS, EXPTIME, FILTER, GAIN, RA, DEC).
-- **PSF & Background:** FWHM mediano, elipticidad, medición robusta del fondo usando sigma clipping y estimadores de momentos.
-- **Artifacts:** Saturación (fracción de píxeles), inf/nan rates, y máscaras.
-- **Detector & Calibration QC:** Capacidad para medir uniformidad, read noise y hot pixels.
-- **Astrometry:** Validación estructural WCS y estimación de residuales roundtrip.
-- **Rule Engine:** Evalúa métricas generadas contra reglas declarativas y perfiles científicos.
-- **Trending:** Seguimiento temporal del comportamiento del instrumento, con motor DB local.
-- **CLI & UI:** Herramienta de consola y explorador de tendencias en Streamlit.
-- **QC Diff:** Comparaciones entre productos crudos y procesados.
-
-## Installation
+## 🧪 Pruebas Unitarias y Verificación
 
 ```bash
-git clone https://github.com/boxmark/astro-qc
-cd astro-qc
-uv sync
+# Tests de la suite JavaScript / Web
+node tests/test_qc_engine.js
+
+# Tests del motor Python
+pytest
 ```
 
-## Usage
+---
 
-### Quick QC
-Para un análisis rápido sin dependencias externas:
-```bash
-uv run astro-qc quick <file.fits>
-```
+## 📄 Licencia
 
-### JSON Export
-Para integración con pipelines:
-```bash
-uv run astro-qc json-export <file.fits>
-```
-
-### Trending
-Explorar la evolución del instrumento (requiere haber analizado previamente datos):
-```bash
-uv run astro-qc trend
-```
-
-### UI
-Lanzar la interfaz web local:
-```bash
-uv run astro-qc ui
-```
-
-## Synthetics and Verification
-`astro-qc` incluye `synth/generator.py` para generar datos con *ground truth* y facilitar los test suites, previniendo falsos positivos.
-
-```bash
-uv run python synth/generator.py
-uv run pytest
-```
-
-## Contributing
-Este proyecto fue diseñado con arquitectura escalable: los módulos (PSF, Astrometria, etc.) son plug-and-play en `pipeline.py`.
-Si deseas agregar fotometría compleja (como `astro-qc deep`), abre un Issue con la formulación científica y las reglas asociadas.
+Código abierto bajo licencia [MIT](LICENSE). Desarrollado por **Lorenzo Perez** ([@lorenhey](https://github.com/lorenhey)).

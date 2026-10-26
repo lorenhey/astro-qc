@@ -1,0 +1,90 @@
+/* Estilos profesionales para astro-qc v2.0.0 */
+:root {
+  --font-mono: 'Consolas', 'Fira Code', 'Monaco', monospace;
+}
+
+body {
+  background-color: #030712;
+  color: #f3f4f6;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #111827;
+}
+::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+/* Navigation Tabs */
+.nav-tab-btn.active-tab {
+  background-color: #111827;
+  color: #38bdf8;
+  border-bottom: 2px solid #38bdf8;
+}
+.nav-tab-btn.inactive-tab {
+  color: #9ca3af;
+  border-bottom: 2px solid transparent;
+}
+.nav-tab-btn.inactive-tab:hover {
+  color: #f3f4f6;
+  background-color: rgba(17, 24, 39, 0.5);
+}
+
+/* Card Panel */
+.card-panel {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 0.5rem;
+}
+
+/* Status Badges */
+.badge-pass {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.badge-conditional {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.badge-reject {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Red Night Vision Mode */
+body.red-night-mode {
+  background-color: #0a0000 !important;
+  color: #ff4d4d !important;
+}
+body.red-night-mode .card-panel {
+  background-color: #150000 !important;
+  border-color: #3a0505 !important;
+}
+body.red-night-mode header,
+body.red-night-mode footer {
+  background-color: #100000 !important;
+  border-color: #300000 !important;
+}
+body.red-night-mode input,
+body.red-night-mode select {
+  background-color: #200000 !important;
+  border-color: #500000 !important;
+  color: #ff6666 !important;
+}
+body.red-night-mode .text-sky-400,
+body.red-night-mode .text-amber-300,
+body.red-night-mode .text-emerald-400 {
+  color: #ff3333 !important;
+}
